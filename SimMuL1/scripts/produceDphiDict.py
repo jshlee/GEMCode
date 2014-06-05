@@ -34,6 +34,10 @@ def getTree(fileName,station):
 def dphiCut(h, fractionToKeep):
     """Get the dPhi cut corresponding to the fractionToKeep [95,98,99]"""
 
+    ## just a safety to prevent it from crashing
+    if h.GetEntries() == 0:
+        return 2.0000
+    
     ax = h.GetXaxis()
     total = h.Integral()
     bin = 1
@@ -55,30 +59,50 @@ def dphiCut(h, fractionToKeep):
 def produceDphiDict(filesDir, outFileName):
     """Get the libary of dPhi values"""
     
-    etas = [8,12,5,5] ## eta partitions
-    dphis = [[[[[0 for x in xrange(2)] for x in xrange(len(fr))] for x in xrange(len(pt))] for x in xrange(etas[1])] for x in xrange(len(stations))]
+    npartitions = [10,12,5,5] ## eta partitions
+    dphis = [[[[[0 for x in xrange(2)] for x in xrange(len(fr))] for x in xrange(len(pt))] for x in xrange(npartitions[1])] for x in xrange(len(stations))]
+    stationStrings = {'ME1b' : 'GE11-9-10', 'ME21' : 'GE21L', 'ME31' : 'RE31', 'ME41' : 'RE41' }
     
     for st in range(len(stations)):
         station = stations[st]
-        ## print "Processing station", station, "with", etas[st], "partitions"        
-        for m in range(etas[st]):
-            ## print "  Processing partition", m+1
+        ## print "Processing station", station, "with", npartitions[st], "partitions"
+        for m in range(1,npartitions[st]+1):
+            ## print "  Processing partition", m
             for n in range(len(pt)):
                 ## print "    Processing", pt[n]
                 t = getTree("%sgem-csc_stub_ana_%s.root"%(filesDir,pt[n]),station)
                 ## add eta cuts here
                 if (station is 'ME1b') or (station is 'ME21'):
-                    t.Draw("TMath::Abs(dphi_pad_odd)>>dphi_odd(600,0.,0.3)", ok_pad1_lct1)
-                    t.Draw("TMath::Abs(dphi_pad_even)>>dphi_even(600,0.,0.03)", ok_pad2_lct2)
+                    t.Draw("TMath::Abs(dphi_pad_odd)>>dphi_odd(600,0.,0.3)", AND(ok_pad1_lct1, ok_partition(station, m, 'odd')))
+                    t.Draw("TMath::Abs(dphi_pad_even)>>dphi_even(600,0.,0.03)", AND(ok_pad2_lct2, ok_partition(station, m, 'even')))
                 else:
-                    t.Draw("TMath::Abs(dphi_rpcstrip_odd)>>dphi_odd(600,0.,0.3)", ok_rpcstrip1_lct1)
-                    t.Draw("TMath::Abs(dphi_rpcstrip_even)>>dphi_even(600,0.,0.03)", ok_rpcstrip2_lct2)
+                    t.Draw("TMath::Abs(dphi_rpcstrip_odd)>>dphi_odd(600,0.,0.3)", AND(ok_rpcstrip1_lct1, ok_partition(station, m, 'odd')))
+                    t.Draw("TMath::Abs(dphi_rpcstrip_even)>>dphi_even(600,0.,0.03)", AND(ok_rpcstrip2_lct2, ok_partition(station, m, 'even')))
                 h_dphi_odd = TH1F(gDirectory.Get("dphi_odd"))
                 h_dphi_even = TH1F(gDirectory.Get("dphi_even"))
+                if h_dphi_odd.GetEntries()==0:
+                    print "Dphi_%s_Eta%d_%s_odd.png"%(station,m,pt[n]), 'has 0 entries'
+
+                if h_dphi_even.GetEntries()==0:
+                    print "Dphi_%s_Eta%d_%s_even.png"%(station,m,pt[n]), 'has 0 entries'
+
+                ## option to print the histograms
+                printDphis = False
+                if printDphis:
+                    c = TCanvas("c","c",800,600)
+                    c.cd()
+                    h_dphi_odd.Draw("")
+                    c.SaveAs("Dphi_%s_Eta%d_%s_odd.png"%(station,m,pt[n]))
+                    
+                    c = TCanvas("c","c",800,600)
+                    c.cd()
+                    h_dphi_even.Draw("")
+                    c.SaveAs("Dphi_%s_Eta%d_%s_even.png"%(station,m,pt[n]))
+                    
                 for f in range(len(fr)):
                     ## print "      Processing fraction",fr[f]
-                    dphis[st][m][n][f][0] = dphiCut(h_dphi_odd, fr[f])
-                    dphis[st][m][n][f][1] = dphiCut(h_dphi_even, fr[f])
+                    dphis[st][m-1][n][f][0] = dphiCut(h_dphi_odd, fr[f])
+                    dphis[st][m-1][n][f][1] = dphiCut(h_dphi_even, fr[f])
 
     ## print the dphis to a file
     outfile = open("%s"%(outFileName),"w")
@@ -90,7 +114,7 @@ def produceDphiDict(filesDir, outFileName):
             endchar1 = ""
         else:
             endchar1 = ","
-            for m in range(etas[st]):
+            for m in range(npartitions[st]):
                 outfile.write('        "Eta%d" : {\n'%(m+1))
                 if station == len(stations)-1:
                     endchar2 = ""
@@ -142,8 +166,6 @@ def produceDphiDict(filesDir, outFileName):
     outfile.close()
     """
 
-    return
-    
     ## print some additional information
     print "dPhi library written to:", outfile.name
     outfile = open("%s"%(outFileName),"r")
