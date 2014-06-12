@@ -22,6 +22,7 @@ eosfiles['_Nu_SLHC12_2023Muon_PU140'] = ['/eos/uscms/store/user/lpcgem/jlee/Sing
 eosfiles['_Nu_SLHC12_2023Muon_PU140_geonmo'] = ['/eos/uscms/store/user/lpcgem/geonmo/SingleNu_cfi_GEN_SIM/SingleNu_SLHC12_2023Muon_DIGI_PU140v2/6b50ed2a008d8a47a360507d169521e1/']
 eosfiles['_Nu_SLHC12_2023Muon_PU400'] = ['/eos/uscms/store/user/lpcgem/aysen/SingleNu_cfi_GEN_SIM/SingleNu_SLHC11_2023Muon_DIGI_PU400_v3/6869af1b28a0650484eca6fece69b429/']
 
+eosfiles['_pt2-50_SLHC12_2023Muon_PU140_tao'] = ['/eos/uscms/store/user/lpcgem/tahuang/SingleMuPt2-50_1M_SLHC11_2023Muon/SingleMuon_SLHC12_2023Muon_DIGI_PU140/464f837479844427abae84188ceec4af/']
 
 ## Sven's samples for bending angle calculations
 eosfiles['_SingleMuPt3_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcgem/dildick/SingleMuPt3_SLHC12_GEN_SIM_DIGI_L1/SingleMuPt3_SLHC12_GEN_SIM_DIGI_L1/d1c0a6121a5b67989597420fd3bcad81/']
