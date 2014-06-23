@@ -66,6 +66,7 @@ SimTrackMatching = cms.PSet(
         input = cms.InputTag('g4SimHits','MuonME0Hits'),
         simMuOnly = cms.bool(True),
         discardEleHits = cms.bool(True),
+        run = cms.bool(False)
     ),
     me0DigiPreReco = cms.PSet(
         verbose = cms.int32(0),

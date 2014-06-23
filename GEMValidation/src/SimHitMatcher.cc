@@ -27,6 +27,7 @@ SimHitMatcher::SimHitMatcher(const SimTrack& t, const SimVertex& v,
   me0SimHitInput_ = me0SimHit_.getParameter<edm::InputTag>("input");
   simMuOnlyME0_ = me0SimHit_.getParameter<bool>("simMuOnly");
   discardEleHitsME0_ = me0SimHit_.getParameter<bool>("discardEleHits");
+  runME0SimHit_ = me0SimHit_.getParameter<bool>("run");
 
   auto rpcSimHit_ = conf().getParameter<edm::ParameterSet>("rpcSimHit");
   verboseRPC_ = rpcSimHit_.getParameter<int>("verbose");
@@ -48,19 +49,12 @@ SimHitMatcher::~SimHitMatcher() {}
 void 
 SimHitMatcher::init()
 {
-  edm::Handle<edm::PSimHitContainer> csc_hits;
-  edm::Handle<edm::PSimHitContainer> gem_hits;
-  edm::Handle<edm::PSimHitContainer> rpc_hits;
-  edm::Handle<edm::PSimHitContainer> me0_hits;
-  edm::Handle<edm::SimTrackContainer> sim_tracks;
-  edm::Handle<edm::SimVertexContainer> sim_vertices;
-
   event().getByLabel(simInputLabel_, sim_tracks);
   event().getByLabel(simInputLabel_, sim_vertices);
   event().getByLabel(cscSimHitInput_, csc_hits);
   event().getByLabel(gemSimHitInput_, gem_hits);
   event().getByLabel(rpcSimHitInput_, rpc_hits);
-  event().getByLabel(me0SimHitInput_, me0_hits);
+  if (runME0SimHit_) event().getByLabel(me0SimHitInput_, me0_hits);
 
   // fill trkId2Index associoation:
   int no = 0;
@@ -210,7 +204,7 @@ SimHitMatcher::matchSimHitsToSimTrack(std::vector<unsigned int> track_ids,
       RPCDetId layer_id( h.detUnitId() );
       rpc_chamber_to_hits_[ layer_id.chamberId().rawId() ].push_back(h);
     }
-    for (auto& h: me0_hits)
+    if (runME0SimHit_) for (auto& h: me0_hits)
     {
       if (h.trackId() != track_id) continue;
       int pdgid = h.particleType();
