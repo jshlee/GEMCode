@@ -13,7 +13,8 @@ GEMRecHitMatcher::GEMRecHitMatcher(SimHitMatcher& sh)
   minBXGEM_ = gemRecHit_.getParameter<int>("minBX");
   maxBXGEM_ = gemRecHit_.getParameter<int>("maxBX");
   matchDeltaStrip_ = gemRecHit_.getParameter<int>("matchDeltaStrip");
-  verboseGEM_ = gemRecHit_.getParameter<int>("verbose");
+  verboseGEMRecHit_ = gemRecHit_.getParameter<int>("verbose");
+  runGEMRecHit_ = gemRecHit_.getParameter<bool>("run");
 
   if (!(gemRecHitInput_.label().empty()))
   {
@@ -29,7 +30,7 @@ GEMRecHitMatcher::init()
 {
   edm::Handle<GEMRecHitCollection> gem_rechits;
   event().getByLabel(gemRecHitInput_, gem_rechits);
-  matchRecHitsToSimTrack(*gem_rechits.product());
+  if (runGEMRecHit_) matchRecHitsToSimTrack(*gem_rechits.product());
 }
 
 
@@ -44,7 +45,7 @@ GEMRecHitMatcher::matchRecHitsToSimTrack(const GEMRecHitCollection& rechits)
     GEMDetId superch_id(p_id.region(), p_id.ring(), p_id.station(), 1, p_id.chamber(), 0);
 
     auto hit_strips = simhit_matcher_->hitStripsInDetId(id, matchDeltaStrip_);
-    if (verboseGEM_)
+    if (verboseGEMRecHit_)
     {
       cout<<"hit_strips_fat ";
       copy(hit_strips.begin(), hit_strips.end(), ostream_iterator<int>(cout, " "));
@@ -55,7 +56,7 @@ GEMRecHitMatcher::matchRecHitsToSimTrack(const GEMRecHitCollection& rechits)
 
     for (auto d = rechits_in_det.first; d != rechits_in_det.second; ++d)
     {
-      if (verboseGEM_) cout<<"recHit "<<p_id<<" "<<*d<<endl;
+      if (verboseGEMRecHit_) cout<<"recHit "<<p_id<<" "<<*d<<endl;
       // check that the rechit is within BX range
       if (d->BunchX() < minBXGEM_ || d->BunchX() > maxBXGEM_) continue;
       // check that it matches a strip that was hit by SimHits from our track
@@ -72,7 +73,7 @@ GEMRecHitMatcher::matchRecHitsToSimTrack(const GEMRecHitCollection& rechits)
       }
 
       if (!stripFound) continue;
-      if (verboseGEM_) cout<<"oki"<<endl;
+      if (verboseGEMRecHit_) cout<<"oki"<<endl;
 
       auto myrechit = make_digi(id, d->firstClusterStrip(), d->BunchX(), GEM_STRIP, d->clusterSize());
       detid_to_recHits_[id].push_back(myrechit);

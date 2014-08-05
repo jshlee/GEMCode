@@ -111,6 +111,10 @@ private:
   bool verboseDigi_;
   bool verbosePad_;
   bool verboseCoPad_;
+
+  bool runGEMDigi_;
+  bool runGEMPad_;
+  bool runGEMCoPad_;
 };
 
 #endif

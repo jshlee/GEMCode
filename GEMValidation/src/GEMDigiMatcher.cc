@@ -16,18 +16,21 @@ GEMDigiMatcher::GEMDigiMatcher(SimHitMatcher& sh)
   maxBXGEM_ = gemDigi_.getParameter<int>("maxBX");
   matchDeltaStrip_ = gemDigi_.getParameter<int>("matchDeltaStrip");
   verboseDigi_ = gemDigi_.getParameter<int>("verbose");
+  runGEMDigi_ = gemDigi_.getParameter<bool>("run");
 
   auto gemPad_= conf().getParameter<edm::ParameterSet>("gemPadDigi");
   gemPadDigiInput_ = gemPad_.getParameter<edm::InputTag>("input");
   minBXGEM_ = gemPad_.getParameter<int>("minBX");
   maxBXGEM_ = gemPad_.getParameter<int>("maxBX");
   verbosePad_ = gemPad_.getParameter<int>("verbose");
+  runGEMPad_ = gemPad_.getParameter<bool>("run");
 
   auto gemCoPad_= conf().getParameter<edm::ParameterSet>("gemCoPadDigi");
   gemCoPadDigiInput_ = gemCoPad_.getParameter<edm::InputTag>("input");
   minBXGEM_ = gemCoPad_.getParameter<int>("minBX");
   maxBXGEM_ = gemCoPad_.getParameter<int>("maxBX");
   verboseCoPad_ = gemCoPad_.getParameter<int>("verbose");
+  runGEMCoPad_ = gemCoPad_.getParameter<bool>("run");
 
   matchDeltaStrip_ = conf().getUntrackedParameter<int>("matchDeltaStripGEM", 1);
 
@@ -50,15 +53,15 @@ GEMDigiMatcher::init()
 {
   edm::Handle<GEMDigiCollection> gem_digis;
   event().getByLabel(gemDigiInput_, gem_digis);
-  matchDigisToSimTrack(*gem_digis.product());
+  if (runGEMDigi_) matchDigisToSimTrack(*gem_digis.product());
 
   edm::Handle<GEMCSCPadDigiCollection> gem_pads;
   event().getByLabel(gemPadDigiInput_, gem_pads);
-  matchPadsToSimTrack(*gem_pads.product());
+  if (runGEMPad_) matchPadsToSimTrack(*gem_pads.product());
 
   edm::Handle<GEMCSCPadDigiCollection> gem_co_pads;
   event().getByLabel(gemPadDigiInput_, gem_co_pads);
-  matchCoPadsToSimTrack(*gem_co_pads.product());
+  if (runGEMCoPad_) matchCoPadsToSimTrack(*gem_co_pads.product());
 }
 
 

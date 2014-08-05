@@ -15,12 +15,14 @@ SimHitMatcher::SimHitMatcher(const SimTrack& t, const SimVertex& v,
   gemSimHitInput_ = gemSimHit_.getParameter<edm::InputTag>("input");
   simMuOnlyGEM_ = gemSimHit_.getParameter<bool>("simMuOnly");
   discardEleHitsGEM_ = gemSimHit_.getParameter<bool>("discardEleHits");
+  runGEMSimHit_ = gemSimHit_.getParameter<bool>("run");
 
   auto cscSimHit_= conf().getParameter<edm::ParameterSet>("cscSimHit");
   verboseCSC_ = cscSimHit_.getParameter<int>("verbose");
   cscSimHitInput_ = cscSimHit_.getParameter<edm::InputTag>("input");
   simMuOnlyCSC_ = cscSimHit_.getParameter<bool>("simMuOnly");
   discardEleHitsCSC_ = cscSimHit_.getParameter<bool>("discardEleHits");
+  runCSCSimHit_ = cscSimHit_.getParameter<bool>("run");
 
   auto me0SimHit_ = conf().getParameter<edm::ParameterSet>("me0SimHit");
   verboseME0_ = me0SimHit_.getParameter<int>("verbose");
@@ -34,6 +36,7 @@ SimHitMatcher::SimHitMatcher(const SimTrack& t, const SimVertex& v,
   rpcSimHitInput_ = rpcSimHit_.getParameter<edm::InputTag>("input");
   simMuOnlyRPC_ = rpcSimHit_.getParameter<bool>("simMuOnly");
   discardEleHitsRPC_ = rpcSimHit_.getParameter<bool>("discardEleHits");
+  runRPCSimHit_ = rpcSimHit_.getParameter<bool>("run");
 
   simInputLabel_ = conf().getUntrackedParameter<std::string>("simInputLabel", "g4SimHits");
 
@@ -54,7 +57,7 @@ SimHitMatcher::init()
   event().getByLabel(cscSimHitInput_, csc_hits);
   event().getByLabel(gemSimHitInput_, gem_hits);
   event().getByLabel(rpcSimHitInput_, rpc_hits);
-  if (runME0SimHit_) event().getByLabel(me0SimHitInput_, me0_hits);
+  event().getByLabel(me0SimHitInput_, me0_hits);
 
   // fill trkId2Index associoation:
   int no = 0;
@@ -163,7 +166,7 @@ SimHitMatcher::matchSimHitsToSimTrack(std::vector<unsigned int> track_ids,
 {
   for (auto& track_id: track_ids)
   {
-    for (auto& h: csc_hits)
+    if (runCSCSimHit_) for (auto& h: csc_hits)
     {
       if (h.trackId() != track_id) continue;
       int pdgid = h.particleType();
@@ -176,7 +179,7 @@ SimHitMatcher::matchSimHitsToSimTrack(std::vector<unsigned int> track_ids,
       CSCDetId layer_id( h.detUnitId() );
       csc_chamber_to_hits_[ layer_id.chamberId().rawId() ].push_back(h);
     }
-    for (auto& h: gem_hits)
+    if (runGEMSimHit_) for (auto& h: gem_hits)
     {
       if (h.trackId() != track_id) continue;
       int pdgid = h.particleType();
@@ -191,7 +194,7 @@ SimHitMatcher::matchSimHitsToSimTrack(std::vector<unsigned int> track_ids,
       GEMDetId superch_id(p_id.region(), p_id.ring(), p_id.station(), 1, p_id.chamber(), 0);
       gem_superchamber_to_hits_[ superch_id() ].push_back(h);
     }
-    for (auto& h: rpc_hits)
+    if (runRPCSimHit_) for (auto& h: rpc_hits)
     {
       if (h.trackId() != track_id) continue;
       int pdgid = h.particleType();
@@ -219,57 +222,54 @@ SimHitMatcher::matchSimHitsToSimTrack(std::vector<unsigned int> track_ids,
     }
   }
 
-  // find pads with hits
-  auto detids = detIdsGEM();
-  // find 2-layer coincidence pads with hits
-  for (auto d: detids)
-  {
-    GEMDetId id(d);
-    auto hits = hitsInDetId(d);
-    auto roll = gemGeometry_->etaPartition(id);
-    //int max_npads = roll->npads();
-    set<int> pads;
-    for (auto& h: hits)
-    {
-      LocalPoint lp = h.entryPoint();
-      pads.insert( 1 + static_cast<int>(roll->padTopology().channel(lp)) );
+  if (runGEMSimHit_) {
+    // find pads with hits
+    auto detids = detIdsGEM();
+    // find 2-layer coincidence pads with hits
+    for (auto d: detids) {
+      GEMDetId id(d);
+      auto hits = hitsInDetId(d);
+      auto roll = gemGeometry_->etaPartition(id);
+      //int max_npads = roll->npads();
+      set<int> pads;
+      for (auto& h: hits) {
+	LocalPoint lp = h.entryPoint();
+	pads.insert( 1 + static_cast<int>(roll->padTopology().channel(lp)) );
+      }
+      gem_detids_to_pads_[d] = pads;
     }
-    gem_detids_to_pads_[d] = pads;
-  }
-
-  // find 2-layer coincidence pads with hits
-  for (auto d: detids)
-  {
-    GEMDetId id1(d);
-    if (id1.layer() != 1) continue;
-    GEMDetId id2(id1.region(), id1.ring(), id1.station(), 2, id1.chamber(), id1.roll());
-    // does layer 2 has simhits?
-    if (detids.find(id2()) == detids.end()) continue;
-
-    // find pads with hits in layer1
-    auto hits1 = hitsInDetId(d);
-    auto roll1 = gemGeometry_->etaPartition(id1);
-    set<int> pads1;
-    for (auto& h: hits1)
-    {
-      LocalPoint lp = h.entryPoint();
-      pads1.insert( 1 + static_cast<int>(roll1->padTopology().channel(lp)) );
+    
+    // find 2-layer coincidence pads with hits
+    for (auto d: detids) {
+      GEMDetId id1(d);
+      if (id1.layer() != 1) continue;
+      GEMDetId id2(id1.region(), id1.ring(), id1.station(), 2, id1.chamber(), id1.roll());
+      // does layer 2 has simhits?
+      if (detids.find(id2()) == detids.end()) continue;
+      
+      // find pads with hits in layer1
+      auto hits1 = hitsInDetId(d);
+      auto roll1 = gemGeometry_->etaPartition(id1);
+      set<int> pads1;
+      for (auto& h: hits1) {
+	LocalPoint lp = h.entryPoint();
+	pads1.insert( 1 + static_cast<int>(roll1->padTopology().channel(lp)) );
+      }
+      
+      // find pads with hits in layer2
+      auto hits2 = hitsInDetId(id2());
+      auto roll2 = gemGeometry_->etaPartition(id2);
+      set<int> pads2;
+      for (auto& h: hits2) {
+	LocalPoint lp = h.entryPoint();
+	pads2.insert( 1 + static_cast<int>(roll2->padTopology().channel(lp)) );
+      }
+      
+      set<int> copads;
+      std::set_intersection(pads1.begin(), pads1.end(), pads2.begin(), pads2.end(), std::inserter(copads, copads.begin()));
+      if (copads.empty()) continue;
+      gem_detids_to_copads_[d] = copads;
     }
-
-    // find pads with hits in layer2
-    auto hits2 = hitsInDetId(id2());
-    auto roll2 = gemGeometry_->etaPartition(id2);
-    set<int> pads2;
-    for (auto& h: hits2)
-    {
-      LocalPoint lp = h.entryPoint();
-      pads2.insert( 1 + static_cast<int>(roll2->padTopology().channel(lp)) );
-    }
-
-    set<int> copads;
-    std::set_intersection(pads1.begin(), pads1.end(), pads2.begin(), pads2.end(), std::inserter(copads, copads.begin()));
-    if (copads.empty()) continue;
-    gem_detids_to_copads_[d] = copads;
   }
 }
 
@@ -467,13 +467,13 @@ SimHitMatcher::hitsInChamber(unsigned int detid) const
   if (is_csc(detid))
   {
     CSCDetId id(detid);
-    if (csc_chamber_to_hits_.find(id.chamberId().rawId()) == gem_chamber_to_hits_.end()) return no_hits_;
+    if (csc_chamber_to_hits_.find(id.chamberId().rawId()) == csc_chamber_to_hits_.end()) return no_hits_;
     return csc_chamber_to_hits_.at(id.chamberId().rawId());
   }
   if (is_rpc(detid))
   {
     RPCDetId id(detid);
-    if (rpc_chamber_to_hits_.find(id.chamberId().rawId()) == gem_chamber_to_hits_.end()) return no_hits_;
+    if (rpc_chamber_to_hits_.find(id.chamberId().rawId()) == rpc_chamber_to_hits_.end()) return no_hits_;
     return rpc_chamber_to_hits_.at(id.chamberId().rawId());
   }
   return no_hits_;

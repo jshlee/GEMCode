@@ -14,6 +14,7 @@ CSCDigiMatcher::CSCDigiMatcher(SimHitMatcher& sh)
   minBXCSCWire_ = cscWireDigi_.getParameter<int>("minBX");
   maxBXCSCWire_ = cscWireDigi_.getParameter<int>("maxBX");
   matchDeltaWG_ = cscWireDigi_.getParameter<int>("matchDeltaWG");
+  runWG_ = cscWireDigi_.getParameter<bool>("run");
 
   auto cscComparatorDigi_ = conf().getParameter<edm::ParameterSet>("cscStripDigi");
   cscComparatorDigiInput_ = cscComparatorDigi_.getParameter<edm::InputTag>("input");
@@ -21,6 +22,7 @@ CSCDigiMatcher::CSCDigiMatcher(SimHitMatcher& sh)
   minBXCSCComp_ = cscComparatorDigi_.getParameter<int>("minBX");
   maxBXCSCComp_ = cscComparatorDigi_.getParameter<int>("maxBX");
   matchDeltaStrip_ = cscComparatorDigi_.getParameter<int>("matchDeltaStrip");
+  runStrip_ = cscComparatorDigi_.getParameter<bool>("run");
 
   setVerbose(conf().getUntrackedParameter<int>("verboseCSCDigi", 0));
 
@@ -44,7 +46,7 @@ void CSCDigiMatcher::init()
   edm::Handle<CSCWireDigiCollection> wire_digis;
   event().getByLabel(cscWireDigiInput_, wire_digis);
 
-  matchTriggerDigisToSimTrack(*comp_digis.product(), *wire_digis.product());
+  if (runWG_ and runStrip_) matchTriggerDigisToSimTrack(*comp_digis.product(), *wire_digis.product());
 }
 
 

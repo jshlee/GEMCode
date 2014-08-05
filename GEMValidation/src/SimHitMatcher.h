@@ -136,6 +136,9 @@ private:
   bool discardEleHitsRPC_;
   bool discardEleHitsME0_;
 
+  bool runCSCSimHit_;
+  bool runGEMSimHit_;
+  bool runRPCSimHit_;
   bool runME0SimHit_;
 
   std::string simInputLabel_;

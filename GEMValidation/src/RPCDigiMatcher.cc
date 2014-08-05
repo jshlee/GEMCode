@@ -17,7 +17,7 @@ RPCDigiMatcher::RPCDigiMatcher(SimHitMatcher& sh)
   maxBXRPC_ = rpcDigi_.getParameter<int>("maxBX");
   matchDeltaStrip_ = rpcDigi_.getParameter<int>("matchDeltaStrip");
   verboseDigi_ = rpcDigi_.getParameter<int>("verbose");
-
+  runRPCDigi_ = rpcDigi_.getParameter<bool>("run");
 
   matchDeltaStrip_ = conf().getUntrackedParameter<int>("matchDeltaStripRPC", 1);
 
@@ -37,8 +37,7 @@ RPCDigiMatcher::init()
 {
   edm::Handle<RPCDigiCollection> rpc_digis;
   event().getByLabel(rpcDigiInput_, rpc_digis);
-  matchDigisToSimTrack(*rpc_digis.product());
-
+  if (runRPCDigi_) matchDigisToSimTrack(*rpc_digis.product());
 }
 
 

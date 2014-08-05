@@ -23,6 +23,7 @@ CSCStubMatcher::CSCStubMatcher(SimHitMatcher& sh, CSCDigiMatcher& dg, GEMDigiMat
   maxBXCLCT_ = cscCLCT_.getParameter<int>("maxBX");
   verboseCLCT_ = cscCLCT_.getParameter<int>("verbose");
   minNHitsChamberCLCT_ = cscCLCT_.getParameter<int>("minNHitsChamber");
+  runCLCT_ = cscCLCT_.getParameter<bool>("run");
 
   auto cscALCT_ = conf().getParameter<edm::ParameterSet>("cscALCT");
   alctInput_ = cscALCT_.getParameter<edm::InputTag>("input");
@@ -30,6 +31,7 @@ CSCStubMatcher::CSCStubMatcher(SimHitMatcher& sh, CSCDigiMatcher& dg, GEMDigiMat
   maxBXALCT_ = cscALCT_.getParameter<int>("maxBX");
   verboseALCT_ = cscALCT_.getParameter<int>("verbose");
   minNHitsChamberALCT_ = cscALCT_.getParameter<int>("minNHitsChamber");
+  runALCT_ = cscCLCT_.getParameter<bool>("run");
 
   auto cscLCT_ = conf().getParameter<edm::ParameterSet>("cscLCT");
   lctInput_ = cscLCT_.getParameter<edm::InputTag>("input");
@@ -43,6 +45,7 @@ CSCStubMatcher::CSCStubMatcher(SimHitMatcher& sh, CSCDigiMatcher& dg, GEMDigiMat
   matchAlctRpc_ = cscLCT_.getParameter<bool>("matchAlctRpc");
   matchClctRpc_ = cscLCT_.getParameter<bool>("matchClctRpc");
   hsFromSimHitMean_ = cscLCT_.getParameter<bool>("hsFromSimHitMean");
+  runLCT_ = cscLCT_.getParameter<bool>("run");
 
   auto cscMPLCT_ = conf().getParameter<edm::ParameterSet>("cscMPLCT");
   mplctInput_ = cscMPLCT_.getParameter<edm::InputTag>("input");
@@ -51,6 +54,7 @@ CSCStubMatcher::CSCStubMatcher(SimHitMatcher& sh, CSCDigiMatcher& dg, GEMDigiMat
   verboseMPLCT_ = cscMPLCT_.getParameter<int>("verbose");
   minNHitsChamberMPLCT_ = cscMPLCT_.getParameter<int>("minNHitsChamber");
   addGhostMPLCTs_ = cscMPLCT_.getParameter<bool>("addGhosts");
+  runMPLCT_ = cscMPLCT_.getParameter<bool>("run");
 
   minNHitsChamber_ = conf().getUntrackedParameter<int>("minNHitsChamber", 4);
 
@@ -82,10 +86,10 @@ void CSCStubMatcher::init()
   edm::Handle<CSCCorrelatedLCTDigiCollection> mplcts;
   event().getByLabel(mplctInput_, mplcts);
 
-  matchCLCTsToSimTrack(*clcts.product());
-  matchALCTsToSimTrack(*alcts.product());
-  matchLCTsToSimTrack(*lcts.product());
-  matchMPLCTsToSimTrack(*mplcts.product());
+  if (runCLCT_) matchCLCTsToSimTrack(*clcts.product());
+  if (runALCT_) matchALCTsToSimTrack(*alcts.product());
+  if (runLCT_) matchLCTsToSimTrack(*lcts.product());
+  if (runMPLCT_) matchMPLCTsToSimTrack(*mplcts.product());
 }
 
 

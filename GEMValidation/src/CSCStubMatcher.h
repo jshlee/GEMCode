@@ -158,6 +158,11 @@ private:
   bool verboseCLCT_;
   bool verboseLCT_;
   bool verboseMPLCT_;
+
+  bool runALCT_;
+  bool runCLCT_;
+  bool runLCT_;
+  bool runMPLCT_;
 };
 
 

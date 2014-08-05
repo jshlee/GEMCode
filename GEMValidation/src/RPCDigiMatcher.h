@@ -66,8 +66,8 @@ private:
   std::map<unsigned int, DigiContainer> detid_to_digis_;
   std::map<unsigned int, DigiContainer> chamber_to_digis_;
 
-
   bool verboseDigi_;
+  bool runRPCDigi_;
 };
 
 #endif

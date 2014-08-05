@@ -76,6 +76,10 @@ struct MyTrackEff
   void init(); // initialize to default values
   TTree* book(TTree *t, const std::string & name = "trk_eff");
 
+  Int_t lumi;
+  Int_t run;
+  Int_t event;
+
   Float_t pt, eta, phi;
   Char_t charge;
   Char_t endcap;
@@ -181,6 +185,10 @@ struct MyTrackEff
 
 void MyTrackEff::init()
 {
+  lumi = -99;
+  run = -99;
+  event = -99;
+
   pt = 0.;
   phi = 0.;
   eta = -9.;
@@ -282,6 +290,10 @@ TTree* MyTrackEff::book(TTree *t, const std::string & name)
 {
   edm::Service< TFileService > fs;
   t = fs->make<TTree>(name.c_str(), name.c_str());
+
+  t->Branch("lumi", &lumi);
+  t->Branch("run", &run);
+  t->Branch("event", &event);
 
   t->Branch("pt", &pt);
   t->Branch("eta", &eta);
@@ -630,6 +642,10 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
    
   for (auto s: stations_to_use_)
   {
+    etrk_[s].run = match.simhits().event().id().run();
+    etrk_[s].lumi = match.simhits().event().id().luminosityBlock();
+    etrk_[s].event = match.simhits().event().id().event();
+
     etrk_[s].init();
     etrk_[s].pt = t.momentum().pt();
     etrk_[s].phi = t.momentum().phi();
@@ -1028,7 +1044,11 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
     else if (id.station() == 2) continue;
     else MEStation = id.station();
 
-    const int st(detIdToMEStation(MEStation,id.ring()));
+    const int stations(detIdToMEStation(MEStation,id.ring()));
+    int st;
+    if (stations==2 or stations==3) st=1;
+    else continue;
+    
     if (stations_to_use_.count(st) == 0) continue;
 
     const bool odd(id.chamber()%2==1);
@@ -1677,7 +1697,7 @@ void GEMCSCAnalyzer::bookSimTracksDeltaTree()
 //    if (std::find(clcts.begin(),clcts.end(),clct) != clcts.end())  std::cout<<"the matching clct ";
 //    else std::cout <<" another clct "; 
     for (auto p : clcts)    
-       std::cout<< p <<std::endl;
+       std::cout<<id<< p <<std::endl;
     
   }
 
@@ -1689,7 +1709,7 @@ void GEMCSCAnalyzer::bookSimTracksDeltaTree()
     if (stations_to_use_.count(st) == 0) continue;
     auto alcts = match_lct.allALCTsInChamber(d);
     for (auto p : alcts)    
-       std::cout<< p <<std::endl;
+       std::cout<<id<< p <<std::endl;
     
   }
 
@@ -1701,7 +1721,7 @@ void GEMCSCAnalyzer::bookSimTracksDeltaTree()
     if (stations_to_use_.count(st) == 0) continue;
     auto lcts = match_lct.allLCTsInChamber(d);
     for (auto p : lcts)    
-       std::cout<< p <<std::endl;
+       std::cout<<id<< p <<std::endl;
     
   }
 

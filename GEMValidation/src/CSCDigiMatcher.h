@@ -92,6 +92,9 @@ private:
   
   int verboseStrip_;
   int verboseWG_;
+
+  bool runStrip_;
+  bool runWG_;
 };
 
 #endif
