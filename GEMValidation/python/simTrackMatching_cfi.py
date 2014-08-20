@@ -140,7 +140,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(3),
         maxBX = cms.int32(9),
-        matchDeltaStrip = cms.int32(1),
+        matchDeltaStrip = cms.int32(2),
         minNHitsChamber = cms.int32(4),
     ),
     cscWireDigi = cms.PSet(
@@ -149,7 +149,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(3),
         maxBX = cms.int32(8),
-        matchDeltaWG = cms.int32(1),
+        matchDeltaWG = cms.int32(2),
         minNHitsChamber = cms.int32(4),
     ),
     cscCLCT = cms.PSet(

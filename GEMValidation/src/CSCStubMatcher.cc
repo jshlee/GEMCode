@@ -127,7 +127,7 @@ CSCStubMatcher::matchCLCTsToSimTrack(const CSCCLCTDigiCollection& clcts)
       auto mydigi = make_digi(id, half_strip, c->getBX(), CSC_CLCT, c->getQuality(), c->getPattern());
 
       // store all CLCTs in this chamber
-      chamber_to_clcts_[id].push_back(mydigi);
+      chamber_to_clcts_all_[id].push_back(mydigi);
 
       // match by half-strip with the digis
       if (digi_strips.find(half_strip) == digi_strips.end())
@@ -156,6 +156,9 @@ CSCStubMatcher::matchCLCTsToSimTrack(const CSCCLCTDigiCollection& clcts)
       }
 
       chamber_to_clct_[id] = mydigi;
+
+      // store matching CLCTs in this chamber
+      chamber_to_clcts_[id].push_back(mydigi);
     }
     if (chamber_to_clcts_[id].size() > 2)
     {
@@ -220,7 +223,7 @@ CSCStubMatcher::matchALCTsToSimTrack(const CSCALCTDigiCollection& alcts)
       auto mydigi = make_digi(id, wg, a->getBX(), CSC_ALCT, a->getQuality());
 
       // store all ALCTs in this chamber
-      chamber_to_alcts_[id].push_back(mydigi);
+      chamber_to_alcts_all_[id].push_back(mydigi);
 
       // match by wiregroup with the digis
       if (digi_wgs.find(wg) == digi_wgs.end())
@@ -243,6 +246,9 @@ CSCStubMatcher::matchALCTsToSimTrack(const CSCALCTDigiCollection& alcts)
       }
 
       chamber_to_alct_[id] = mydigi;
+
+      // store matching ALCTs in this chamber
+      chamber_to_alcts_[id].push_back(mydigi);
     }
     if (chamber_to_alcts_[id].size() > 2)
     {
@@ -347,7 +353,7 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
     if (n_lct == 0) continue; // no LCTs in this chamber
 
     // assign the non necessarily matching LCTs
-    chamber_to_lcts_[id] = lcts_tmp;
+    chamber_to_lcts_all_[id] = lcts_tmp;
 
     if (verbose() and !(n_lct == 1 || n_lct == 2 || n_lct == 4 ) )
     {
@@ -441,6 +447,9 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
         //cout<<"   new digi: "<<lct<<endl;
       }
       chamber_to_lct_[id] = lct;
+
+      // assign the matching LCTs
+      chamber_to_lcts_[id].push_back(lct);
     }
   }
 
@@ -541,7 +550,7 @@ CSCStubMatcher::matchMPLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& mplc
     if (n_lct == 0) continue; // no mplcts in this chamber
 
     // assign the non necessarily matching Mplcts
-    chamber_to_mplcts_[id] = mplcts_tmp;
+    chamber_to_mplcts_all_[id] = mplcts_tmp;
 
     if (verbose() and !(n_lct == 1 || n_lct == 2 || n_lct == 4 ) )
     {
@@ -577,6 +586,9 @@ CSCStubMatcher::matchMPLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& mplc
         //cout<<"   new digi: "<<lct<<endl;
       }
       chamber_to_lct_[id] = lct;
+
+      // assign the matching Mplcts
+      chamber_to_mplcts_[id].push_back(lct);
     }
   }
 
@@ -602,6 +614,30 @@ CSCStubMatcher::matchMPLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& mplc
   }
 }
 
+
+std::set<unsigned int>
+CSCStubMatcher::chamberIdsAllCLCT(int csc_type) const
+{
+  return selectDetIds(chamber_to_clcts_all_, csc_type);
+}
+
+std::set<unsigned int>
+CSCStubMatcher::chamberIdsAllALCT(int csc_type) const
+{
+  return selectDetIds(chamber_to_alcts_all_, csc_type);
+}
+
+std::set<unsigned int>
+CSCStubMatcher::chamberIdsAllLCT(int csc_type) const
+{
+  return selectDetIds(chamber_to_lcts_all_, csc_type);
+}
+
+std::set<unsigned int>
+CSCStubMatcher::chamberIdsAllMPLCT(int csc_type) const
+{
+  return selectDetIds(chamber_to_mplcts_all_, csc_type);
+}
 
 std::set<unsigned int>
 CSCStubMatcher::chamberIdsCLCT(int csc_type) const
@@ -656,53 +692,58 @@ CSCStubMatcher::mplctInChamber(unsigned int detid) const
   return chamber_to_mplct_.at(detid);
 }
 
-std::set<unsigned int>
-CSCStubMatcher::chamberIdsAllCLCT(int csc_type) const
-{
-  return selectDetIds(chamber_to_clcts_, csc_type);
-}
-
-std::set<unsigned int>
-CSCStubMatcher::chamberIdsAllALCT(int csc_type) const
-{
-  return selectDetIds(chamber_to_alcts_, csc_type);
-}
-
-std::set<unsigned int>
-CSCStubMatcher::chamberIdsAllLCT(int csc_type) const
-{
-  return selectDetIds(chamber_to_lcts_, csc_type);
-}
-
-std::set<unsigned int>
-CSCStubMatcher::chamberIdsAllMPLCT(int csc_type) const
-{
-  return selectDetIds(chamber_to_mplcts_, csc_type);
-}
 
 const matching::DigiContainer&
 CSCStubMatcher::allCLCTsInChamber(unsigned int detid) const
+{
+  if (chamber_to_clcts_all_.find(detid) == chamber_to_clcts_all_.end()) return no_digis_;
+  return chamber_to_clcts_all_.at(detid);
+}
+
+const matching::DigiContainer&
+CSCStubMatcher::allALCTsInChamber(unsigned int detid) const
+{
+  if (chamber_to_alcts_all_.find(detid) == chamber_to_alcts_all_.end()) return no_digis_;
+  return chamber_to_alcts_all_.at(detid);
+}
+
+const matching::DigiContainer&
+CSCStubMatcher::allLCTsInChamber(unsigned int detid) const
+{
+  if (chamber_to_lcts_all_.find(detid) == chamber_to_lcts_all_.end()) return no_digis_;
+  return chamber_to_lcts_all_.at(detid);
+}
+
+const matching::DigiContainer&
+CSCStubMatcher::allMPLCTsInChamber(unsigned int detid) const
+{
+  if (chamber_to_mplcts_all_.find(detid) == chamber_to_mplcts_all_.end()) return no_digis_;
+  return chamber_to_mplcts_all_.at(detid);
+}
+
+const matching::DigiContainer&
+CSCStubMatcher::clctsInChamber(unsigned int detid) const
 {
   if (chamber_to_clcts_.find(detid) == chamber_to_clcts_.end()) return no_digis_;
   return chamber_to_clcts_.at(detid);
 }
 
 const matching::DigiContainer&
-CSCStubMatcher::allALCTsInChamber(unsigned int detid) const
+CSCStubMatcher::alctsInChamber(unsigned int detid) const
 {
   if (chamber_to_alcts_.find(detid) == chamber_to_alcts_.end()) return no_digis_;
   return chamber_to_alcts_.at(detid);
 }
 
 const matching::DigiContainer&
-CSCStubMatcher::allLCTsInChamber(unsigned int detid) const
+CSCStubMatcher::lctsInChamber(unsigned int detid) const
 {
   if (chamber_to_lcts_.find(detid) == chamber_to_lcts_.end()) return no_digis_;
   return chamber_to_lcts_.at(detid);
 }
 
 const matching::DigiContainer&
-CSCStubMatcher::allMPLCTsInChamber(unsigned int detid) const
+CSCStubMatcher::mplctsInChamber(unsigned int detid) const
 {
   if (chamber_to_mplcts_.find(detid) == chamber_to_mplcts_.end()) return no_digis_;
   return chamber_to_mplcts_.at(detid);

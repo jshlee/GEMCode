@@ -655,13 +655,27 @@ void GEMCSCAnalyzer::analyzeTrackEff(SimTrackMatchManager& match, int trk_no)
   }
 
   // SimHits
-  for(auto d: match_sh.chamberIdsCSC(0))
+  auto csc_simhits(match_sh.chamberIdsCSC(0));
+  for(auto d: csc_simhits)
   {
     CSCDetId id(d);
     const int st(detIdToMEStation(id.station(),id.ring()));
     if (stations_to_use_.count(st) == 0) continue;
+    int nlayers(match_sh.nLayersWithHitsInSuperChamber(d));
 
-    const int nlayers(match_sh.nLayersWithHitsInSuperChamber(d));
+    // case ME11
+    if (id.station()==1 and (id.ring()==4 or id.ring()==1)){
+      // get the detId of the pairing subchamber
+      int other_ring(id.ring()==4 ? 1 : 4);
+      CSCDetId co_id(id.endcap(), id.station(), other_ring, id.chamber());
+      // check if co_id occurs in the list
+      // add the hit layers
+      auto rawId(co_id.rawId());
+      if (csc_simhits.find(rawId) != csc_simhits.end()) {
+	nlayers += match_sh.nLayersWithHitsInSuperChamber(rawId);
+      }
+    }
+
     if (nlayers < minNHitsChamberCSCSimHit_) continue;
 
     const bool odd(id.chamber()%2==1);

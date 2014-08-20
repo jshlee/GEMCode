@@ -19,19 +19,10 @@
 #include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h"
 #include "DataFormats/GEMDigi/interface/GEMCSCPadDigiCollection.h"
 #include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
-#include "GEMCode/GEMValidation/src/ALCT.h" 
-#include "GEMCode/GEMValidation/src/CLCT.h" 
-#include "GEMCode/GEMValidation/src/LCT.h" 
-#include "GEMCode/GEMValidation/src/MPLCT.h" 
 
 #include <vector>
 #include <map>
 #include <set>
-
-typedef std::vector<const ALCT*>  ALCTCollection;
-typedef std::vector<const CLCT*>  CLCTCollection;
-typedef std::vector<const LCT*>   LCTCollection;
-typedef std::vector<const MPLCT*> MPLCTCollection;
 
 class SimHitMatcher;
 //class CSCDigiMatcher;
@@ -48,6 +39,12 @@ public:
   
   ~CSCStubMatcher();
 
+  /// crossed chamber detIds with not necessarily matching stubs
+  std::set<unsigned int> chamberIdsAllCLCT(int csc_type = CSC_ME1b) const;
+  std::set<unsigned int> chamberIdsAllALCT(int csc_type = CSC_ME1b) const;
+  std::set<unsigned int> chamberIdsAllLCT(int csc_type = CSC_ME1b) const;
+  std::set<unsigned int> chamberIdsAllMPLCT(int csc_type = CSC_ME1b) const;
+
   /// chamber detIds with matching stubs
   /// by default, only returns those from ME1b; use al chambers if csc_type=0
   std::set<unsigned int> chamberIdsCLCT(int csc_type = CSC_ME1b) const;
@@ -61,27 +58,17 @@ public:
   Digi lctInChamber(unsigned int) const;
   Digi mplctInChamber(unsigned int) const;
 
-  const CLCT* CLCTinChamber(unsigned int) const;
-  const ALCT* ALCTinChamber(unsigned int) const;
-  const LCT* LCTinChamber(unsigned int) const;
-  const MPLCT* MPLCTinChamber(unsigned int) const;
-
-  /// crossed chamber detIds with not necessarily matching stubs
-  std::set<unsigned int> chamberIdsAllCLCT(int csc_type = CSC_ME1b) const;
-  std::set<unsigned int> chamberIdsAllALCT(int csc_type = CSC_ME1b) const;
-  std::set<unsigned int> chamberIdsAllLCT(int csc_type = CSC_ME1b) const;
-  std::set<unsigned int> chamberIdsAllMPLCT(int csc_type = CSC_ME1b) const;
-
   /// all stubs (not necessarily matching) from a particular crossed chamber
   const DigiContainer& allCLCTsInChamber(unsigned int) const;
   const DigiContainer& allALCTsInChamber(unsigned int) const;
   const DigiContainer& allLCTsInChamber(unsigned int) const;
   const DigiContainer& allMPLCTsInChamber(unsigned int) const;
 
-  const ALCTCollection& alctsInChamber(unsigned int) const;
-  const CLCTCollection& clctsInChamber(unsigned int) const;
-  const LCTCollection&  lctsInChamber(unsigned int) const;
-  const MPLCTCollection& mplctsInChamber(unsigned int) const;
+  /// all matching from a particular crossed chamber
+  const DigiContainer& clctsInChamber(unsigned int) const;
+  const DigiContainer& alctsInChamber(unsigned int) const;
+  const DigiContainer& lctsInChamber(unsigned int) const;
+  const DigiContainer& mplctsInChamber(unsigned int) const;
 
   /// How many CSC chambers with matching stubs of some minimal quality did this SimTrack hit?
   int nChambersWithCLCT(int min_quality = 0) const;
@@ -120,22 +107,18 @@ private:
   Id2Digi chamber_to_lct_;
   Id2Digi chamber_to_mplct_;
 
-  std::map<unsigned int, const CLCT*> chamberCLCT_;
-  std::map<unsigned int, const ALCT*> chamberALCT_;
-  std::map<unsigned int, const LCT*> chamberLCT_;
-  std::map<unsigned int, const MPLCT*> chamberMPLCT_;
-
   // all stubs (not necessarily matching) in crossed chambers with digis
   typedef std::map<unsigned int, DigiContainer> Id2DigiContainer;
+  Id2DigiContainer chamber_to_clcts_all_;
+  Id2DigiContainer chamber_to_alcts_all_;
+  Id2DigiContainer chamber_to_lcts_all_;
+  Id2DigiContainer chamber_to_mplcts_all_;
+
+  // all matching stubs in crossed chambers with digis
   Id2DigiContainer chamber_to_clcts_;
   Id2DigiContainer chamber_to_alcts_;
   Id2DigiContainer chamber_to_lcts_;
   Id2DigiContainer chamber_to_mplcts_;
-
-  std::map<unsigned int, const ALCTCollection&> chamberCLCTs_;
-  std::map<unsigned int, const CLCTCollection&> chamberALCTs_;
-  std::map<unsigned int, const LCTCollection&> chamberLCTs_;
-  std::map<unsigned int, const MPLCTCollection&> chamberMPLCTs_;
 
   template<class D>
   std::set<unsigned int> selectDetIds(D &digis, int csc_type) const;
