@@ -8,7 +8,7 @@ process = cms.Process('GEMCSCTRGANA')
 cmssw = os.getenv( "CMSSW_VERSION" )
 
 ## steering
-events = 100000
+events = -1
 sample='dimu'
 globalTag = 'upgrade2019'
 #sample='minbias'
@@ -29,8 +29,11 @@ if w==61:
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.EventContent.EventContent_cff')
-process.load('Configuration.Geometry.GeometryExtended2019Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2019_cff')
+process.load('Configuration.Geometry.GeometryExtended2023Muon_cff')
+process.load('Configuration.Geometry.GeometryExtended2023MuonReco_cff')
+
+#process.load('Configuration.Geometry.GeometryExtended2019Reco_cff')
+#process.load('Configuration.Geometry.GeometryExtended2019_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load("Configuration.StandardSequences.L1Emulator_cff")
@@ -38,7 +41,9 @@ process.load("Configuration.StandardSequences.L1Extra_cff")
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgrade2019', '')
+#process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgrade2019', '')a
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
+
 process.load('L1TriggerConfig.L1ScalesProducers.L1MuTriggerScalesConfig_cff')
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
@@ -79,7 +84,7 @@ process.source = cms.Source("PoolSource",
 
 from GEMCode.GEMValidation.InputFileHelpers import useInputDir
 from GEMCode.SimMuL1.GEMCSCTriggerSamplesLib import eosfiles
-suffix = '_pt2-50_PU140_dphi0_preTrig33_NoLQCLCTwithoutGEM_ALCTGEM'
+suffix = 'PU140_TMB_Baseline_2'
 process = useInputDir(process, eosfiles[suffix], True)
 
 process.maxEvents = cms.untracked.PSet(
@@ -104,7 +109,7 @@ process.GEMCSCTriggerEfficiency.minBxLCT = readout_windows[2][0]
 process.GEMCSCTriggerEfficiency.maxBxLCT = readout_windows[2][1]
 process.GEMCSCTriggerEfficiency.minBxMPLCT = readout_windows[3][0]
 process.GEMCSCTriggerEfficiency.maxBxMPLCT = readout_windows[3][1]
-process.GEMCSCTriggerEfficiency.minNHitsChamber = cms.untracked.int32(3)
+process.GEMCSCTriggerEfficiency.minNHitsChamber = cms.untracked.int32(4)
 process.GEMCSCTriggerEfficiency.minSimTrPt = cms.untracked.double(2)
 GEMmatching = process.GEMCSCTriggerEfficiency.simTrackMatching
 GEMmatching.gemRecHit.input = ""

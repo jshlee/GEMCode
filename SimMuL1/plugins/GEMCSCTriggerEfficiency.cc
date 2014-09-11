@@ -954,6 +954,7 @@ GEMCSCTriggerEfficiency::analyze(const edm::Event& iEvent, const edm::EventSetup
     iSetup.get<TrackingComponentsRecord>().get("SmartPropagatorAnyRK", propagatorAlong);
     iSetup.get<TrackingComponentsRecord>().get("SmartPropagatorAnyOpposite", propagatorOpposite);
 
+    if (mufiducial_) delete mufiducial_;
     mufiducial_ = new MuFiducial();
     mufiducial_->setGEMGeometry(gemGeometry);    
     mufiducial_->setCSCGeometry(cscGeometry);

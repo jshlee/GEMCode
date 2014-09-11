@@ -24,6 +24,9 @@ eosfiles['_Nu_SLHC12_2023Muon_PU400'] = ['/eos/uscms/store/user/lpcgem/aysen/Sin
 
 eosfiles['_pt2-50_SLHC12_2023Muon_PU140_tao'] = ['/eos/uscms/store/user/lpcgem/tahuang/SingleMuPt2-50_1M_SLHC11_2023Muon/SingleMuon_SLHC12_2023Muon_DIGI_PU140/464f837479844427abae84188ceec4af/']
 
+eosfiles['Suggested_Digi_TAO']=['/eos/uscms/store/user/lpcgem/tahuang/SingleMuPt2-50_1M_SLHC11_2023Muon/SingleMuon_SLHC12_2023Muon_DIGI_PU140/464f837479844427abae84188ceec4af/']
+
+
 ## Sven's samples for bending angle calculations
 eosfiles['_SingleMuPt3_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcgem/dildick/SingleMuPt3_SLHC12_GEN_SIM_DIGI_L1/SingleMuPt3_SLHC12_GEN_SIM_DIGI_L1/d1c0a6121a5b67989597420fd3bcad81/']
 eosfiles['_SingleMuPt5_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcgem/dildick/SingleMuPt5_SLHC12_GEN_SIM_DIGI_L1/SingleMuPt5_SLHC12_GEN_SIM_DIGI_L1/7bd82d6abf1b247a8e77eabb8d0358b4/']
@@ -33,3 +36,114 @@ eosfiles['_SingleMuPt15_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcge
 eosfiles['_SingleMuPt20_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcgem/dildick/SingleMuPt20_SLHC12_GEN_SIM_DIGI_L1/SingleMuPt20_SLHC12_GEN_SIM_DIGI_L1/9f43e5aa0db40ecf4c6ad4f76ff3ba57/']
 eosfiles['_SingleMuPt30_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcgem/dildick/SingleMuPt30_SLHC12_GEN_SIM_DIGI_L1/SingleMuPt30_SLHC12_GEN_SIM_DIGI_L1/4c222e5f541a2a909af90d52da92bbae/']
 eosfiles['_SingleMuPt40_SLHC12_2023Muon_PU0_L1'] = ['/eos/uscms/store/user/lpcgem/dildick/SingleMuPt40_SLHC12_GEN_SIM_DIGI_L1/SingleMuPt40_SLHC12_GEN_SIM_DIGI_L1/0f0ae35ebf4e35077884bcb7db7d7ad0/']
+
+################################################################## Default ones ran on SLCH13 ########################################333
+
+#TMB Baseline 1 = No improvments
+eosfiles['PU140_TMB_Baseline_1'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/TMB_Baseline_1/']
+
+#ALCT improvements
+eosfiles['PU140_alctGhostCancellationBxDepth'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/alctGhostCancellationBxDepth/']
+eosfiles['PU140_alctGhostCancellationSideQuality'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/alctGhostCancellationSideQuality/']
+eosfiles['PU140_alctNarrowMaskForR1'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/alctNarrowMaskForR1/']
+eosfiles['PU140_alctPretrigDeadtime'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/alctPretrigDeadtime/']
+
+#CLCT improvements
+eosfiles['PU140_useDeadTimeZoning'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/useDeadTimeZoning/']
+eosfiles['PU140_useDynamicStateMachineZone'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/useDynamicStateMachineZone/']
+eosfiles['PU140_clctPidThreshPretrig'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/clctPidThreshPretrig/']
+eosfiles['PU140_clctMinSeparation'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/clctMinSeparation/']
+
+
+#TMB Baseline 2 = ALCT + CLCT improvments
+eosfiles['PU140_TMB_Baseline_2'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/TMB_Baseline_2/']
+
+
+#TMB improvments
+eosfiles['PU140_matchTrigWindowSize'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/matchTrigWindowSize/']
+eosfiles['PU140_alctUseCorrectedBx'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/alctUseCorrectedBx/']
+eosfiles['PU140_clctUseCorrectedBx'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/clctUseCorrectedBx/']
+eosfiles['PU140_clctToAlct'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/clctToAlct/']
+eosfiles['PU140_tmbDropUsedClcts_matchEarliestClctME11Only'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/tmbDropUsedClcts_matchEarliestClctME11Only/']
+eosfiles['PU140_tmbCrossBxAlgorithm'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/tmbCrossBxAlgorithm/']
+eosfiles['PU140_tmbReadoutEarliest2'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/tmbReadoutEarliest2/']
+
+
+#SLHC = Actual configuration for CSC4 with CLCT, ALCT and TMB Improvments
+eosfiles['PU140_SLHC'] = ['/eos/uscms/store/user/jdimasva/RunningOnAugust/PU140_v6/SLHC/']
+
+
+
+################################################# CSC4 Improvments using Scenario 1 on SLCH16 #####################################
+
+
+#TMB Baseline 1 = No improvments
+eosfiles['S1_PU140_TMB_Baseline_1'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/TMB_Baseline_1/']
+
+#ALCT improvements
+eosfiles['S1_PU140_alctGhostCancellationBxDepth'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/alctGhostCancellationBxDepth/']
+eosfiles['S1_PU140_alctGhostCancellationSideQuality'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/alctGhostCancellationSideQuality/']
+eosfiles['S1_PU140_alctNarrowMaskForR1'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/alctNarrowMaskForR1/']
+eosfiles['S1_PU140_alctPretrigDeadtime'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/alctPretrigDeadtime/']
+
+#CLCT improvements
+eosfiles['S1_PU140_useDeadTimeZoning'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/useDeadTimeZoning/']
+eosfiles['S1_PU140_useDynamicStateMachineZone'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/useDynamicStateMachineZone/']
+eosfiles['S1_PU140_clctPidThreshPretrig'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/clctPidThreshPretrig/']
+eosfiles['S1_PU140_clctMinSeparation'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/clctMinSeparation/']
+
+
+#TMB Baseline 2 = ALCT + CLCT improvments
+eosfiles['S1_PU140_TMB_Baseline_2'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/TMB_Baseline_2/']
+
+
+#TMB improvments
+eosfiles['S1_PU140_matchTrigWindowSize'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/matchTrigWindowSize/']
+eosfiles['S1_PU140_alctUseCorrectedBx'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/alctUseCorrectedBx/']
+eosfiles['S1_PU140_clctUseCorrectedBx'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/clctUseCorrectedBx/']
+eosfiles['S1_PU140_clctToAlct'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/clctToAlct/']
+eosfiles['S1_PU140_tmbDropUsedClcts_matchEarliestClctME11Only'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/tmbDropUsedClcts_matchEarliestClctME11Only/']
+eosfiles['S1_PU140_tmbCrossBxAlgorithm'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/tmbCrossBxAlgorithm/']
+eosfiles['S1_PU140_tmbReadoutEarliest2'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/tmbReadoutEarliest2/']
+
+
+#SLHC = Actual configuration for CSC4 with CLCT, ALCT and TMB Improvments
+eosfiles['S1_PU140_SLHC'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_August_14/PU_140/SLHC/']
+
+
+########################## CSC4 improvments using Scenario 3 on SLCH16 ############################3
+
+#TMB Baseline 1 = No improvments
+eosfiles['S3_PU140_TMB_Baseline_1'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/TMB_Baseline_1/']
+
+#ALCT improvements
+eosfiles['S3_PU140_alctGhostCancellationBxDepth'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/alctGhostCancellationBxDepth/']
+eosfiles['S3_PU140_alctGhostCancellationSideQuality'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/alctGhostCancellationSideQuality/']
+eosfiles['S3_PU140_alctNarrowMaskForR1'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/alctNarrowMaskForR1/']
+eosfiles['S3_PU140_alctPretrigDeadtime'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/alctPretrigDeadtime/']
+
+#CLCT improvements
+eosfiles['S3_PU140_useDeadTimeZoning'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/useDeadTimeZoning/']
+eosfiles['S3_PU140_useDynamicStateMachineZone'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/useDynamicStateMachineZone/']
+eosfiles['S3_PU140_clctPidThreshPretrig'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/clctPidThreshPretrig/']
+eosfiles['S3_PU140_clctMinSeparation'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/clctMinSeparation/']
+
+
+#TMB Baseline 2 = ALCT + CLCT improvments
+eosfiles['S3_PU140_TMB_Baseline_2'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/TMB_Baseline_2/']
+
+
+#TMB improvments
+eosfiles['S3_PU140_matchTrigWindowSize'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/matchTrigWindowSize/']
+eosfiles['S3_PU140_alctUseCorrectedBx'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/alctUseCorrectedBx/']
+eosfiles['S3_PU140_clctUseCorrectedBx'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/clctUseCorrectedBx/']
+eosfiles['S3_PU140_clctToAlct'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/clctToAlct/']
+eosfiles['S3_PU140_tmbDropUsedClcts_matchEarliestClctME11Only'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/tmbDropUsedClcts_matchEarliestClctME11Only/']
+eosfiles['S3_PU140_tmbCrossBxAlgorithm'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/tmbCrossBxAlgorithm/']
+eosfiles['S3_PU140_tmbReadoutEarliest2'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/tmbReadoutEarliest2/']
+
+
+#SLHC = Actual configuration for CSC4 with CLCT, ALCT and TMB Improvments
+eosfiles['S3_PU140_SLHC'] = ['/eos/uscms/store/user/jdimasva/CSC_Note_Upgrade_Aug14_Scenario3/PU_140/SLHC/']
+
+
