@@ -309,7 +309,7 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
     {
       if (!lct->isValid()) continue;
 
-      if (verbose()) cout<<"lct "<<ch_id<<" "<<*lct<<endl;
+      if (verbose()) cout<<"lct in detId "<<ch_id<<" "<<*lct<<endl;
 
       int bx = lct->getBX();
 
@@ -352,7 +352,7 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
     } // lcts_in_det
 
     size_t n_lct = lcts_tmp.size();
-    if (verbose()) cout<<"n_lct = "<<n_lct<<endl;
+    if (verbose()) cout<< "number of lcts = "<<n_lct<<endl;
     if (n_lct == 0) continue; // no LCTs in this chamber
 
     // assign the non necessarily matching LCTs
@@ -380,20 +380,20 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
     auto pads(gem_digi_matcher_->coPadsInSuperChamber(gemDetId));
     auto rpcDigis(rpc_digi_matcher_->digisInChamber(rpcDetId));
     const auto hits = sh_matcher_->hitsInChamber(id);
-
-    for (unsigned int i=0; i<clct.size();i++){
-
-        
+    
+    for (auto &lct: lcts_tmp)
+     {
         for (unsigned int j=0; j<alct.size();j++){
+        for (unsigned int i=0; i<clct.size()+1;i++){
 
            auto hasPad(pads.size()!=0);
            auto hasDigis(rpcDigis.size()!=0);
 
-
-           const bool caseAlctGem(is_valid(alct[j]) and hasPad and !is_valid(clct[i]) and (ch_id.station() == 1 or ch_id.station() == 2));
-           const bool caseClctGem(is_valid(clct[i]) and hasPad and !is_valid(alct[j]) and (ch_id.station() == 1 or ch_id.station() == 2));
-           const bool caseAlctRpc(is_valid(alct[j]) and hasDigis and !is_valid(clct[i]) and (ch_id.station() == 3 or ch_id.station() == 4));
-           const bool caseClctRpc(is_valid(clct[i]) and hasDigis and !is_valid(alct[j]) and (ch_id.station() == 3 or ch_id.station() == 4));
+           const bool caseAlctClct(j<alct.size() && i<clct.size());
+           const bool caseAlctGem(is_valid(alct[j]) and hasPad and i==clct.size() and (ch_id.station() == 1 or ch_id.station() == 2));
+           //const bool caseClctGem(is_valid(clct[i]) and hasPad and !is_valid(alct[j]) and (ch_id.station() == 1 or ch_id.station() == 2));
+           const bool caseAlctRpc(is_valid(alct[j]) and hasDigis and i==clct.size() and (ch_id.station() == 3 or ch_id.station() == 4));
+           //const bool caseClctRpc(is_valid(clct[i]) and hasDigis and !is_valid(alct[j]) and (ch_id.station() == 3 or ch_id.station() == 4));
 
           const CSCChamber* cscChamber(cscGeometry_->chamber(CSCDetId(id)));
           const CSCLayer* cscKeyLayer(cscChamber->layer(3));
@@ -406,7 +406,7 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
           const int my_hs_gem_propagate((nStrips-cscKeyLayerGeometry->nearestStrip(lpME))*2);
           const auto hits = sh_matcher_->hitsInChamber(id);
           const float my_hs_gemrpc_mean(sh_matcher_->simHitsMeanStrip(hits));
-          const float my_wg_gemrpc_mean(sh_matcher_->simHitsMeanStrip(hits));
+          //const float my_wg_gemrpc_mean(sh_matcher_->simHitsMeanStrip(hits));
 
         /* Printing Stuff
               if (caseAlctClct[i][j]) std::cout << "caseAlctClct" << std::endl;
@@ -420,20 +420,16 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
 
             //All the matching information can go here.
 
-
-             for (auto &lct: lcts_tmp)
-             {
-        
-
-                 auto digi_strips = digi_matcher_->stripsInChamber(id, 1);
-                 const int my_hs(digi_channel(clct[i]));
+                auto digi_strips = digi_matcher_->stripsInChamber(id, 1);
+                int my_hs = -1 ;
+		if ( i < clct.size() ) my_hs = digi_channel(clct[i]);
 
                 const int my_wg(digi_wg(alct[j]));
                 const int my_bx(digi_bx(alct[j]));
                 auto digi_wgs = digi_matcher_->wiregroupsInChamber(id,1);
 
 
-               if ( is_valid(clct[i]) and is_valid(alct[j]) and !(my_bx == digi_bx(lct) and my_hs == digi_channel(lct) and my_wg == digi_wg(lct))){
+               if ( caseAlctClct and !(my_bx == digi_bx(lct) and my_hs == digi_channel(lct) and my_wg == digi_wg(lct))){
                     if (verbose()) cout<<"  BAD"<<endl;
                     continue;
                 }
@@ -444,19 +440,19 @@ CSCStubMatcher::matchLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& lcts)
                     continue;
                }
 
-               if (matchClctGem_ and caseClctGem and !(my_bx == digi_bx(lct) and my_hs == digi_channel(lct) and std::abs(my_wg_gemrpc_mean - digi_wg(lct))<3) ){
+              /* if (matchClctGem_ and caseClctGem and !(my_bx == digi_bx(lct) and my_hs == digi_channel(lct) and std::abs(my_wg_gemrpc_mean - digi_wg(lct))<3) ){
                     if (verbose()) cout<<"  BAD"<<endl;
                     continue;
-               }
+               }*/
 
               if (matchAlctRpc_ and caseAlctRpc and !(my_bx == digi_bx(lct) and std::abs(my_hs_gemrpc - digi_channel(lct))<3 and my_wg == digi_wg(lct) ) ){
                    if (verbose()) cout<<"  BAD"<<endl;
                    continue;
               }
-              if (matchClctRpc_ and caseClctRpc and !(my_bx == digi_bx(lct) and my_hs == digi_channel(lct) and std::abs(my_wg_gemrpc_mean - digi_wg(lct))<3) ){
+             /* if (matchClctRpc_ and caseClctRpc and !(my_bx == digi_bx(lct) and my_hs == digi_channel(lct) and std::abs(my_wg_gemrpc_mean - digi_wg(lct))<3) ){
                     if (verbose()) cout<<"  BAD"<<endl;
                     continue;
-              }
+              }*/
 
 
              if (chamber_to_lct_.find(id) != chamber_to_lct_.end()){
@@ -525,7 +521,7 @@ CSCStubMatcher::matchMPLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& mplc
     {
       if (!lct->isValid()) continue;
 
-      if (verbose()) cout<<"lct "<<ch_id<<" "<<*lct<<endl;
+      if (verbose()) cout<<"mplct in detId"<<ch_id<<" "<<*lct<<endl;
 
       int bx = lct->getBX();
 
@@ -568,7 +564,7 @@ CSCStubMatcher::matchMPLCTsToSimTrack(const CSCCorrelatedLCTDigiCollection& mplc
     } // mplcts_in_det
 
     size_t n_lct = mplcts_tmp.size();
-    if (verbose()) cout<<"n_lct = "<<n_lct<<endl;
+    if (verbose()) cout<<"number of mplct = "<<n_lct<<endl;
     if (n_lct == 0) continue; // no mplcts in this chamber
 
     // assign the non necessarily matching Mplcts
