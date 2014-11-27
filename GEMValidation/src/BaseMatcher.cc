@@ -21,24 +21,25 @@ BaseMatcher::BaseMatcher(const SimTrack& t, const SimVertex& v,
   if (csc_types.empty()) useCSCChamberTypes_[CSC_ALL] = 1;
 
   // Get the magnetic field
-  es.get< IdealMagneticFieldRecord >().get(magfield_);
+  es.get<IdealMagneticFieldRecord>().get(magfield_);
 
   // Get the propagators                                                                                  
-  es.get< TrackingComponentsRecord >().get("SteppingHelixPropagatorAlong", propagator_);
-  es.get< TrackingComponentsRecord >().get("SteppingHelixPropagatorOpposite", propagatorOpposite_);
+  es.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorAlong", propagator_);
+  es.get<TrackingComponentsRecord>().get("SteppingHelixPropagatorOpposite", propagatorOpposite_);
 
   /// get the geometry
-  hasGEMGeometry_ = false;
-  hasRPCGeometry_ = false;
-  hasCSCGeometry_ = false;
-  hasME0Geometry_ = false;
+  hasGEMGeometry_ = true;
+  hasRPCGeometry_ = true;
+  hasCSCGeometry_ = true;
+  hasME0Geometry_ = true;
+  hasDTGeometry_ = true;
 
   try {
     es.get<MuonGeometryRecord>().get(gem_geom);
     gemGeometry_ = &*gem_geom;
   } catch (edm::eventsetup::NoProxyException<GEMGeometry>& e) {
     hasGEMGeometry_ = false;
-    LogDebug("MuonSimHitAnalyzer") << "+++ Info: GEM geometry is unavailable. +++\n";
+    LogDebug("BaseMatcher") << "+++ Info: GEM geometry is unavailable. +++\n";
   }
 
   try {
@@ -46,7 +47,7 @@ BaseMatcher::BaseMatcher(const SimTrack& t, const SimVertex& v,
     me0Geometry_ = &*me0_geom;
   } catch (edm::eventsetup::NoProxyException<ME0Geometry>& e) {
     hasME0Geometry_ = false;
-    LogDebug("MuonSimHitAnalyzer") << "+++ Info: ME0 geometry is unavailable. +++\n";
+    LogDebug("BaseMatcher") << "+++ Info: ME0 geometry is unavailable. +++\n";
   }
 
   try {
@@ -54,7 +55,7 @@ BaseMatcher::BaseMatcher(const SimTrack& t, const SimVertex& v,
     cscGeometry_ = &*csc_geom;
   } catch (edm::eventsetup::NoProxyException<CSCGeometry>& e) {
     hasCSCGeometry_ = false;
-    LogDebug("MuonSimHitAnalyzer") << "+++ Info: CSC geometry is unavailable. +++\n";
+    LogDebug("BaseMatcher") << "+++ Info: CSC geometry is unavailable. +++\n";
   }
 
   try {
@@ -62,7 +63,15 @@ BaseMatcher::BaseMatcher(const SimTrack& t, const SimVertex& v,
     rpcGeometry_ = &*rpc_geom;
   } catch (edm::eventsetup::NoProxyException<RPCGeometry>& e) {
     hasRPCGeometry_ = false;
-    LogDebug("MuonSimHitAnalyzer") << "+++ Info: RPC geometry is unavailable. +++\n";
+    LogDebug("BaseMatcher") << "+++ Info: RPC geometry is unavailable. +++\n";
+  }
+
+  try {
+    es.get<MuonGeometryRecord>().get(dt_geom);
+    dtGeometry_ = &*dt_geom;
+  } catch (edm::eventsetup::NoProxyException<DTGeometry>& e) {
+    hasDTGeometry_ = false;
+    LogDebug("BaseMatcher") << "+++ Info: DT geometry is unavailable. +++\n";
   }
 }
 
@@ -152,4 +161,49 @@ chamber(const DetId& id)
     break;
   };
   return chamberN;
+}
+
+
+double BaseMatcher::phiHeavyCorr(double pt, double eta, double phi, double charge) const
+{
+    // float resEta = eta;
+    float etaProp = std::abs(eta);
+    if (etaProp< 1.1) etaProp = 1.1;
+    float resPhi = phi - 1.464*charge*cosh(1.7)/cosh(etaProp)/pt - M_PI/144.;
+    if (resPhi > M_PI) resPhi -= 2.*M_PI;
+    if (resPhi < -M_PI) resPhi += 2.*M_PI;
+    return resPhi;
+}
+
+
+
+bool BaseMatcher::passDPhicut(CSCDetId id, float dPhi, float pt) const
+{
+  //  const double GEMdPhi[9][3];
+  if (!(id.station()==1 and (id.ring()==1 or id.ring()==4)) &&
+	!(id.station()==2 and id.ring()==1))  return true;
+   
+  auto GEMdPhi( id.station()==1 ? ME11GEMdPhi : ME21GEMdPhi);
+   // std::copy(&ME11GEMdPhi[0][0], &ME11GEMdPhi[0][0]+9*3,&GEMdPhi[0][0]);
+   //else if (id.station()==2 and id.ring()==1) 
+   // std::copy(&ME21GEMdPhi[0][0], &ME21GEMdPhi[0][0]+9*3,&GEMdPhi[0][0]);
+   
+   bool is_odd(id.chamber()%2==1);
+   bool pass = false;
+
+   for (int b = 0; b < 9; b++)
+   {
+	if (double(pt) >= GEMdPhi[b][0])
+	{
+		
+	    if ((is_odd && GEMdPhi[b][1] > fabs(dPhi)) ||
+		(!is_odd && GEMdPhi[b][2] > fabs(dPhi)))
+		    pass = true;
+	    else    pass = false;
+	}
+    }
+   if (dPhi < -50) pass = true;
+
+   return pass;
+
 }

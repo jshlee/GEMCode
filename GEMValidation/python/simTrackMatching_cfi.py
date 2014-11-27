@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from L1Trigger.CSCTrackFinder.csctfTrackDigis_cfi import*
 
 SimTrackMatching = cms.PSet(
     # common
@@ -19,7 +20,7 @@ SimTrackMatching = cms.PSet(
     simTrack = cms.PSet(
         verbose = cms.int32(0),
         input = cms.InputTag('g4SimHits'),
-        minPt = cms.double(20.0),
+        minPt = cms.double(1.5),
         maxPt = cms.double(999.),
         minEta = cms.double(1.45),
         maxEta = cms.double(4.0),
@@ -176,8 +177,8 @@ SimTrackMatching = cms.PSet(
         maxBX = cms.int32(7),
         minNHitsChamber = cms.int32(4),
         addGhosts = cms.bool(True),
-        matchAlctGem = cms.bool(False),
-        matchAlctRpc = cms.bool(False),
+        matchAlctGem = cms.bool(True),
+        matchAlctRpc = cms.bool(True),
         matchClctGem = cms.bool(False),
         matchClctRpc = cms.bool(False),
         hsFromSimHitMean = cms.bool(True),
@@ -246,6 +247,7 @@ SimTrackMatching = cms.PSet(
         input = cms.InputTag("simCsctfTrackDigis"),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.5),
     ),
     dtTfTrack = cms.PSet(
         verbose = cms.int32(0),
@@ -253,6 +255,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),        
     ),
     rpcPAC = cms.PSet(
         verbose = cms.int32(0),
@@ -260,6 +263,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),        
     ),
     ## TrackFinder candidates
     cscTfCand = cms.PSet(
@@ -268,6 +272,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),
     dtTfCand = cms.PSet(
         verbose = cms.int32(0),
@@ -275,6 +280,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),
     rpcfTfCand = cms.PSet(
         verbose = cms.int32(0),
@@ -282,6 +288,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),
     rpcbTfCand = cms.PSet(
         verbose = cms.int32(0),
@@ -289,7 +296,26 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),    
+    sectorProcessor = csctfTrackDigis.SectorProcessor,
+#       SRLUT = cms.PSet(
+#			Binary = cms.untracked.bool(False),
+#			ReadLUTs = cms.untracked.bool(False),
+#			LUTPath = cms.untracked.string('./'),
+#			UseMiniLUTs = cms.untracked.bool(True),
+#		),
+#        PTLUT = cms.PSet(
+#    			LowQualityFlag = cms.untracked.uint32(4),
+#			ReadPtLUT = cms.bool(False),
+#			PtMethod = cms.untracked.uint32(32),
+#	       ),
+#	CoreLatency = cms.uint32(7),
+#	gangedME1a = cms.untracked.bool(True),
+#	MinBX = cms.int32(3),
+#	MaxBX = cms.int32(9),
+#	initializeFromPSet = cms.bool(True),
+#    ),
     ## GMT and L1Extra
     gmtRegCand = cms.PSet(
         verbose = cms.int32(0),
@@ -297,6 +323,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(False),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),
     gmtCand = cms.PSet(
         verbose = cms.int32(0),
@@ -304,6 +331,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(False),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),
     l1Extra = cms.PSet(
         verbose = cms.int32(0),
@@ -311,6 +339,7 @@ SimTrackMatching = cms.PSet(
         run = cms.bool(True),
         minBX = cms.int32(-1),
         maxBX = cms.int32(1),
+        deltaR = cms.double(0.05),
     ),
 )
 

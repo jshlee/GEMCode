@@ -68,6 +68,10 @@ SimHitMatcher::init()
     no++;
   }
   vector<unsigned> track_ids = getIdsOfSimTrackShower(trk().trackId(), *sim_tracks.product(), *sim_vertices.product());
+  if (verboseCSC_) {
+    std::cout << "Printing track_ids" << std::endl;
+    for (auto id: track_ids) std::cout << "id: " << id << std::endl;
+  }
 
   // select CSC simhits
   edm::PSimHitContainer csc_hits_select;
@@ -83,16 +87,16 @@ SimHitMatcher::init()
   if (verboseCSC_)
   {
     cout<<"sh tn ntids "<<no<<" "<<track_ids.size()<<" "<<csc_hits_select.size()<<endl;
-    cout<<"detids "<<detIdsGEM().size()<<" "<<detIdsCSC().size()<<endl;
+    cout<<"detids CSC " << detIdsCSC().size()<<endl;
 
-    auto gem_det_ids = detIdsGEM();
-    for (auto id: gem_det_ids)
+    auto csc_det_ids = detIdsCSC();
+    for (auto id: csc_det_ids)
     {
-      //auto& gem_simhits = hitsInDetId(id);
-      auto gem_simhits = hitsInDetId(id);
-      auto gem_simhits_gp = simHitsMeanPosition(gem_simhits);
+      //auto& csc_simhits = hitsInDetId(id);
+      auto csc_simhits = hitsInDetId(id);
+      auto csc_simhits_gp = simHitsMeanPosition(csc_simhits);
       auto strips = hitStripsInDetId(id);
-      cout<<"detid "<<GEMDetId(id)<<": "<<gem_simhits.size()<<" "<<gem_simhits_gp.phi()<<" "<< gem_detid_to_hits_[id].size()<<endl;
+      cout<<"detid "<<CSCDetId(id)<<": "<<csc_simhits.size()<<" "<<csc_simhits_gp.phi()<<" "<< csc_detid_to_hits_[id].size()<<endl;
       cout<<"nstrp "<<strips.size()<<endl;
       cout<<"strps : "; std::copy(strips.begin(), strips.end(), ostream_iterator<int>(cout, " ")); cout<<endl;
     }
@@ -100,12 +104,17 @@ SimHitMatcher::init()
 
   if (verboseGEM_) 
   {
+    cout << "detids GEM " << detIdsGEM().size() << endl;
+
     auto gem_ch_ids = chamberIdsGEM();
     for (auto id: gem_ch_ids)
     {
       auto& gem_simhits = hitsInChamber(id);
       auto gem_simhits_gp = simHitsMeanPosition(gem_simhits);
-      cout<<"cchid "<<GEMDetId(id)<<": "<<gem_simhits.size()<<" "<<gem_simhits_gp.phi()<<" "<< gem_chamber_to_hits_[id].size()<<endl;
+      cout<<"cchid "<<GEMDetId(id)<<": nHits "<<gem_simhits.size()<<" phi "<<gem_simhits_gp.phi()<<" nCh "<< gem_chamber_to_hits_[id].size()<<endl;
+//       auto strips = hitStripsInDetId(id);
+//       cout<<"nstrp "<<strips.size()<<endl;
+//       cout<<"strps : "; std::copy(strips.begin(), strips.end(), ostream_iterator<int>(cout, " ")); cout<<endl;
     }
     auto gem_sch_ids = superChamberIdsGEM();
     for (auto id: gem_sch_ids)

@@ -7,15 +7,17 @@ class TFCand
 {
  public:
   /// constructor
-  TFCand();
+  TFCand(const L1MuRegionalCand* t);
   /// copy constructor
   TFCand(const TFCand&);
   /// destructor
   ~TFCand();
 
-  void init(const L1MuRegionalCand *t, CSCTFPtLUT* ptLUT, 
+  void init(CSCTFPtLUT* ptLUT, 
 	    edm::ESHandle< L1MuTriggerScales > &muScales, 
  	    edm::ESHandle< L1MuTriggerPtScale > &muPtScale); 
+
+  void setDR(double);
 
   const L1MuRegionalCand * l1Cand() const {return l1Cand_;}
 
@@ -30,7 +32,7 @@ class TFCand
   
  private:
 
-  const L1MuRegionalCand * l1Cand_;
+  const L1MuRegionalCand* l1Cand_;
   TFTrack* tftrack_;
   std::vector<CSCDetId> ids_;
   double pt_;

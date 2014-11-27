@@ -22,7 +22,7 @@
 #include "L1Trigger/CSCTrackFinder/interface/CSCTFSectorProcessor.h"
 #include "L1Trigger/CSCTrackFinder/interface/CSCSectorReceiverLUT.h"
 #include "L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h"
-#include <L1Trigger/CSCTrackFinder/src/CSCTFDTReceiver.h>
+//#include <L1Trigger/CSCTrackFinder/src/CSCTFDTReceiver.h>
 
 #include "RecoMuon/DetLayers/interface/MuonDetLayerGeometry.h"
 #include "RecoMuon/Records/interface/MuonRecoGeometryRecord.h"

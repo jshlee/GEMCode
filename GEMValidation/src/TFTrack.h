@@ -19,14 +19,9 @@
 #include "L1Trigger/CSCTrackFinder/interface/CSCTFSectorProcessor.h"
 #include "L1Trigger/CSCTrackFinder/interface/CSCSectorReceiverLUT.h"
 #include "L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h"
-//#include <L1Trigger/CSCTrackFinder/src/CSCTFDTReceiver.h>
 #include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
 
-#include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
-#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 #include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h"
-#include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
-#include <DataFormats/CSCDigi/interface/CSCComparatorDigiCollection.h>
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
  
@@ -36,78 +31,16 @@
 #include "DataFormats/GeometrySurface/interface/BoundCylinder.h"
 #include "DataFormats/MuonDetId/interface/GEMDetId.h"
 
-/* #include "TrackingTools/Records/interface/TrackingComponentsRecord.h" */
-/* #include "TrackingTools/DetLayers/interface/DetLayer.h" */
-
-/* #include <L1Trigger/CSCCommonTrigger/interface/CSCConstants.h> */
-/* #include "L1Trigger/CSCCommonTrigger/interface/CSCTriggerGeometry.h" */
-/* #include "L1Trigger/CSCTrackFinder/interface/CSCTFSectorProcessor.h" */
-/* #include "L1Trigger/CSCTrackFinder/interface/CSCSectorReceiverLUT.h" */
-/* #include "L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h" */
-/* #include <L1Trigger/CSCTrackFinder/src/CSCTFDTReceiver.h> */
 #include <L1Trigger/CSCCommonTrigger/interface/CSCConstants.h>
 #include "L1Trigger/CSCCommonTrigger/interface/CSCTriggerGeometry.h"
 
-/* #include "RecoMuon/DetLayers/interface/MuonDetLayerGeometry.h" */
-/* #include "RecoMuon/Records/interface/MuonRecoGeometryRecord.h" */
-
-/* #include "CondFormats/DataRecord/interface/L1MuTriggerScalesRcd.h" */
-/* #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h" */
-
-/* #include "SimMuon/CSCDigitizer/src/CSCDbStripConditions.h" */
-
-/* #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h> */
-/* #include "Geometry/GEMGeometry/interface/GEMGeometry.h" */
-
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
-
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-
-/* #include "FWCore/Framework/interface/Event.h" */
-/* #include "FWCore/Framework/interface/MakerMacros.h" */
-/* #include "FWCore/Framework/interface/ESHandle.h" */
-
-/* #include "FWCore/ParameterSet/interface/ParameterSet.h" */
-/* #include "FWCore/Utilities/interface/InputTag.h" */
-/* #include "FWCore/ServiceRegistry/interface/Service.h" */
-/* #include "CommonTools/UtilAlgos/interface/TFileService.h" */
-
-//#include "TLorentzVector.h"
-//#include "DataFormats/Math/interface/LorentzVector.h"
-//#include <CLHEP/Vector/LorentzVector.h>
-
-/* #include "Geometry/Records/interface/MuonGeometryRecord.h" */
-/* #include "Geometry/CSCGeometry/interface/CSCGeometry.h" */
-/* //#include <Geometry/CSCGeometry/interface/CSCLayer.h> */
-/* #include "Geometry/DTGeometry/interface/DTGeometry.h" */
-/* #include "Geometry/RPCGeometry/interface/RPCGeometry.h" */
-
-/* #include "TrackingTools/GeomPropagators/interface/Propagator.h" */
-/* #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h" */
-
-/* #include <DataFormats/L1DTTrackFinder/interface/L1MuDTChambPhContainer.h> */
-/* #include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h" */
-
-/* #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h" */
-
-/* #include "DataFormats/L1Trigger/interface/L1MuonParticleFwd.h" */
-/* #include "DataFormats/L1Trigger/interface/L1MuonParticle.h" */
-
-/* #include <L1Trigger/CSCCommonTrigger/interface/CSCConstants.h> */
-/* #include <L1Trigger/CSCTrackFinder/interface/CSCTFPtLUT.h> */
-
-/* #include "SimDataFormats/Track/interface/SimTrackContainer.h" */
-/* #include "SimDataFormats/Vertex/interface/SimVertexContainer.h" */
-
-/* #include "CondFormats/L1TObjects/interface/L1MuTriggerScales.h" */
-/* #include "CondFormats/L1TObjects/interface/L1MuTriggerPtScale.h" */
 
 class TFTrack
 {
  public:
   /// constructor
-  TFTrack(const csc::L1Track *t);
+  TFTrack(const csc::L1Track* t, const CSCCorrelatedLCTDigiCollection*);
   /// copy constructor
   TFTrack(const TFTrack&);
   /// destructor
@@ -117,35 +50,45 @@ class TFTrack
 	    edm::ESHandle< L1MuTriggerScales > &muScales,
 	    edm::ESHandle< L1MuTriggerPtScale > &muPtScale);
   
+  void setDR(double dr);
+
   /// L1 track
   const csc::L1Track* getL1Track() const {return l1track_;}
   /// collection of trigger digis
-  const std::vector<const CSCCorrelatedLCTDigi* >& getTriggerDigis() const {return triggerDigis_;} 
+  std::vector<const CSCCorrelatedLCTDigi*> getTriggerDigis() const {return triggerDigis_;} 
   /// collection of MPC LCTs
-  const std::vector<CSCDetId>& getTriggerDigisIds() const {return triggerIds_;}
-  const std::vector<std::pair<float, float>>& getTriggerEtaPhis() {return triggerEtaPhis_;}
-  const std::vector<csctf::TrackStub>& getTriggerStubs() const {return triggerStubs_;}
-  const std::vector<matching::Digi*>& getTriggerMPLCTs() const {return mplcts_;}
-  const std::vector<CSCDetId>& getChamberIds() const {return ids_;}
+  std::vector<CSCDetId> getTriggerDigisIds() const {return triggerIds_;}
+  std::vector<std::pair<float, float>> getTriggerEtaPhis() {return triggerEtaPhis_;}
+  std::vector<csctf::TrackStub> getTriggerStubs() const {return triggerStubs_;}
+  std::vector<matching::Digi*> getTriggerMPLCTs() const {return mplcts_;}
+  std::vector<CSCDetId> getChamberIds() const {return ids_;}
+
+  unsigned int digiInME(int st, int ring);
+
+  void addTriggerDigi(const CSCCorrelatedLCTDigi*);
+  void addTriggerDigiId(const CSCDetId&);
+  void addTriggerEtaPhi(const std::pair<float,float>&);
+  void addTriggerStub(const csctf::TrackStub&);
 
   /// track sign
   bool sign() const {return l1track_->sign();}
   /// bunch crossing 
   int bx() const {return l1track_->bx();}
   /// how many stubs?
-  unsigned int nStubs(bool mb1, bool me1, bool me2, bool me3, bool me4);
+  unsigned int nStubs(bool mb1, bool me1, bool me2, bool me3, bool me4) const;
+  unsigned int nStubs() const {return nstubs;}
   /// how many stubs in CSC? 
-  unsigned int nStubsCSCOk(bool me1, bool me2, bool me3, bool me4);
+  unsigned int nStubsCSCOk(bool me1, bool me2, bool me3, bool me4) const;
   /// has stub in muon barrel/endcap
-  bool hasStubStation(int wheel);  
+  bool hasStubStation(int wheel) const; 
   /// has stub in muon barrel?
-  bool hasStubBarrel();  
+  bool hasStubBarrel() const;  
   /// has stub in muon endcap?
-  bool hasStubEndcap(int station);
+  bool hasStubEndcap(int station) const;
   /// matches CSC stubs?
-  bool hasStubCSCOk(int st);
+  bool hasStubCSCOk(int st) const;
   /// has stubs that pass match?
-  bool passStubsMatch(double eta, int minLowHStubs, int minMidHStubs, int minHighHStubs);
+  bool passStubsMatch(double eta, int minLowHStubs, int minMidHStubs, int minHighHStubs) const;
   /// print some information
   void print();
 
@@ -182,6 +125,7 @@ class TFTrack
   double eta_;
   double pt_;
   double dr_;
+  unsigned int nstubs;
   std::vector<bool> deltaOk_;
   bool debug_;
 };

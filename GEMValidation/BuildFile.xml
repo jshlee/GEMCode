@@ -3,7 +3,11 @@
 <use   name="DataFormats/GEMDigi"/>
 <use   name="DataFormats/RPCDigi"/>
 <use   name="DataFormats/CSCDigi"/>
+<use   name="DataFormats/DTDigi"/>
 <use   name="DataFormats/GEMRecHit"/>
+<use   name="DataFormats/L1GlobalMuonTrigger"/>
+<use   name="DataFormats/L1CSCTrackFinder"/>
+<use   name="DataFormats/L1DTTrackFinder"/>
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/MessageLogger"/>
 <use   name="FWCore/ParameterSet"/>
@@ -19,6 +23,7 @@
 <use   name="Geometry/RPCGeometry"/>
 <use   name="Geometry/CSCGeometry"/>
 <use   name="Geometry/GEMGeometry"/>
+<use   name="Geometry/DTGeometry"/>
 <use   name="SimDataFormats/CrossingFrame"/>
 <use   name="SimDataFormats/TrackerDigiSimLink"/>
 <use   name="SimDataFormats/TrackingHit"/>
@@ -26,6 +31,16 @@
 <use   name="SimGeneral/HepPDTRecord"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="Utilities/General"/>
+<use   name="L1Trigger/CSCCommonTrigger"/>
+<use   name="L1Trigger/CSCTrackFinder"/>
+<use   name="L1Trigger/CSCTriggerPrimitives"/>
+<use   name="L1Trigger/DTUtilities"/>
+<use   name="L1Trigger/DTBti"/>
+<use   name="L1Trigger/DTTraco"/>
+<use   name="L1Trigger/DTTrackFinder"/>
+<use   name="L1Trigger/DTTriggerServerPhi"/>
+<use   name="L1Trigger/DTTriggerServerTheta"/>
+<use   name="L1Trigger/DTSectorCollector"/>
 <export>
   <lib   name="1"/>
 </export>

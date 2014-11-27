@@ -1,7 +1,9 @@
 #include "GEMCode/GEMValidation/src/TFCand.h"
 
-TFCand::TFCand()
-{}
+TFCand::TFCand(const L1MuRegionalCand* t)
+{
+  l1Cand_ = t;
+}
 
 TFCand::TFCand(const TFCand& rhs)
 {}
@@ -10,16 +12,15 @@ TFCand::~TFCand()
 {}
 
 void
-TFCand::init(const L1MuRegionalCand *t, CSCTFPtLUT* ptLUT,
+TFCand::init(CSCTFPtLUT* ptLUT,
 	     edm::ESHandle< L1MuTriggerScales > &muScales,
 	     edm::ESHandle< L1MuTriggerPtScale > &muPtScale)
 {
-  /*
-    l1cand = t;
+  pt_ = muPtScale->getPtScale()->getLowEdge(l1Cand_->pt_packed()) + 1.e-6;
+  eta_ = muScales->getRegionalEtaScale(2)->getCenter(l1Cand_->eta_packed());
+  phi_ = normalizedPhi(muScales->getPhiScale()->getLowEdge(l1Cand_->phi_packed()));
 
-    pt = muPtScale->getPtScale()->getLowEdge(t->pt_packed()) + 1.e-6;
-    eta = muScales->getRegionalEtaScale(2)->getCenter(t->eta_packed());
-    phi = normalizedPhi( muScales->getPhiScale()->getLowEdge(t->phi_packed()));
+  /*
     nTFStubs = -1;
 // B   
 //     //Pt needs some more workaround since it is not in the unpacked data
@@ -43,4 +44,10 @@ TFCand::init(const L1MuRegionalCand *t, CSCTFPtLUT* ptLUT,
         if (fabs(deltaPhi(phi,my_phi))>0.03) std::cout<<"tfcand scales phi diff: my "<<my_phi<<" sc "<<phi<<std::endl;
     }  
 */
+}
+
+void 
+TFCand::setDR(double dr)
+{
+  dr_ = dr;
 }
