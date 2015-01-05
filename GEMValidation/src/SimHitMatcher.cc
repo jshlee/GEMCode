@@ -54,10 +54,10 @@ SimHitMatcher::init()
 {
   event().getByLabel(simInputLabel_, sim_tracks);
   event().getByLabel(simInputLabel_, sim_vertices);
-  event().getByLabel(cscSimHitInput_, csc_hits);
-  event().getByLabel(gemSimHitInput_, gem_hits);
-  event().getByLabel(rpcSimHitInput_, rpc_hits);
-  event().getByLabel(me0SimHitInput_, me0_hits);
+  if (runCSCSimHit_) event().getByLabel(cscSimHitInput_, csc_hits);
+  if (runGEMSimHit_) event().getByLabel(gemSimHitInput_, gem_hits);
+  if (runRPCSimHit_) event().getByLabel(rpcSimHitInput_, rpc_hits);
+  if (runME0SimHit_) event().getByLabel(me0SimHitInput_, me0_hits);
 
   // fill trkId2Index associoation:
   int no = 0;
