@@ -66,6 +66,9 @@ if doGem:
   matching.cscLCT.minNHitsChamber = 3
   matching.cscLCT.matchAlctGem = True
   matching.cscMPLCT.minNHitsChamber = 3
+doRpc = True
+if doRpc:
+  matching.cscLCT.matchAlctRpc = True
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 

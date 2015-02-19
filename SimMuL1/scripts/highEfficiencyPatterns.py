@@ -9,7 +9,7 @@ from cuts import *
 from tdrStyle import *
 from GEMCSCdPhiDict import *
 from math import *
-
+import os
 ## ROOT modules
 from ROOT import *
 
@@ -73,7 +73,7 @@ def getTree(fileName):
     """Get tree for given filename"""
 
     analyzer = "GEMCSCAnalyzer"
-    trk_eff = "trk_eff_st1"
+    trk_eff = "trk_eff_ME11"
 
     file = TFile.Open(fileName)
     if not file:
@@ -100,7 +100,9 @@ def getDphi(eff,pt,evenOdd):
 #_______________________________________________________________________________
 def highEfficiencyPatterns(filesDir, fileName, plotDir, eff, oddEven, ext):
     """Produce plot with GEM high efficiency patterns"""
-    
+   
+    if not os.path.exists(plotDir):
+        os.makedirs(plotDir)
     pt = ["pt10","pt20","pt30","pt40"]    
     pt_labels = ["10","20","30","40"]
 #    pt_labels = ["10 GeV/c","20 GeV/c","30 GeV/c","40 GeV/c"]
@@ -115,7 +117,7 @@ def highEfficiencyPatterns(filesDir, fileName, plotDir, eff, oddEven, ext):
     c.SetGridx(1)
     c.SetGridy(1)
     c.cd()
-    h = TH1F("","           GEM-CSC bending Angle              CMS Phase-2 Simulation Preliminary;Generated muon p_{T} [GeV/c];",50,0.,50.)
+    h = TH1F("","           GEM-CSC bending Angle              CMS Phase-2 Simulation Preliminary;Simulated muon p_{T} [GeV/c];",50,0.,50.)
     superscript = "p_{T}>p_{T}^{min}"
     subscript = "0"
 ##    h.GetYaxis().SetTitle("    |#Delta#phi_{{}^{(GEM,CSC)}}|<|#Delta#phi_{0}^{WP}| Cut Efficiency");
@@ -137,12 +139,14 @@ def highEfficiencyPatterns(filesDir, fileName, plotDir, eff, oddEven, ext):
         dphi = getDphi("%d"%(eff),"%s"%(pt[i]),"%s"%(oddEven))
         dphis[i] = dphi
         if oddEven=="even":
-            ok_dphi = TCut("TMath::Abs(dphi_pad_even) < %f"%(dphi))
-            denom_cut = ok_pad2_lct2_eta
+            ok_dphi = TCut("TMath::Abs(dphi_lct_even) < %f"%(dphi))#or use dphi_pad_odd
+            dphi_cut = TCut("TMath::Abs(dphi_lct_even)<1.0")
+            denom_cut = AND(ok_pad2_lct2_eta,dphi_cut)
             closeFar = 'Even ("close")'
         else:
-            ok_dphi = TCut("TMath::Abs(dphi_pad_odd) < %f"%(dphi))
-            denom_cut = ok_pad1_lct1_eta
+            ok_dphi = TCut("TMath::Abs(dphi_lct_odd) < %f"%(dphi)) # or use dphi_lct_even
+            dphi_cut = TCut("TMath::Abs(dphi_lct_odd)<1.0")
+            denom_cut = AND(ok_pad1_lct1_eta,dphi_cut)
             closeFar = 'Odd ("far")'
 
         h2 = draw_eff(t, "", "h2", "(50,0.,50.)", "pt", 
@@ -205,13 +209,13 @@ def highEfficiencyPatterns(filesDir, fileName, plotDir, eff, oddEven, ext):
 
 
     ## save the file
-    c.SaveAs("%sGEM_highEffPatterns_%s_%s%s"%(plotDir, eff,oddEven,ext))
+    c.SaveAs("%sPU0_GEM_highEffPatterns_dphilct_dPhi_%s_%s%s"%(plotDir, eff,oddEven,ext))
 
 if __name__ == "__main__":
     
     inputDir = "files/"
-    fileName = "gem-csc_stub_ana.root"
-    outputDir = "plots/highEffPatterns/"
+    fileName = "PU0_200k_Pt2-50_GEMCSC_dPhi.root"
+    outputDir = "highEffPatterns/"
     efficiency = 98
     
     highEfficiencyPatterns(inputDir, fileName, outputDir, efficiency, "even", ".pdf")
